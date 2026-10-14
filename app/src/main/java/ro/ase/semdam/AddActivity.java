@@ -1,5 +1,6 @@
 package ro.ase.semdam;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -13,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import ro.ase.semdam.databinding.ActivityAddBinding;
 import ro.ase.semdam.domeniu.Anunt;
@@ -44,17 +46,74 @@ public class AddActivity extends AppCompatActivity {
 
         binding.btnSalveaza.setOnClickListener(v -> {
             String titlu = binding.etTitlu.getText().toString().trim();
-            double pret = Double.parseDouble(binding.etPret.getText().toString().trim());
+            if(titlu.isEmpty())
+            {
+                binding.etTitlu.setError("Titlul nu poate fi gol!");
+                return;
+            }
+
+
+            double pret;
+            try {
+                pret = Double.parseDouble(binding.etPret.getText().toString().trim());
+            } catch (NumberFormatException e) {
+                binding.etPret.setError("Pretul trebuie sa fie un numar valid!");
+                return;
+            }
+
+            if(pret <= 0)
+            {
+                binding.etPret.setError("Pretul trebuie sa fie strict pozitiv!");
+                return;
+            }
+
+
+            int cantitate;
+            try {
+                cantitate = Integer.parseInt(binding.etCantitate.getText().toString().trim());
+            } catch (NumberFormatException e) {
+                binding.etCantitate.setError("Cantitatea trebuie sa fie un numar intreg!");
+                return;
+            }
+            if(cantitate < 1 || cantitate > 100)
+            {
+                binding.etCantitate.setError("Cantitatea trebuie sa fie intre 1 si 100!");
+                return;
+            }
+
+            LocalDate dataPublicare;
+            try {
+                dataPublicare = LocalDate.parse(binding.etDataPublicare.getText().toString().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
+            } catch (DateTimeParseException e) {
+                binding.etDataPublicare.setError("Data trebuie sa fie yyyy-MM-dd!");
+                return;
+            }
+            if(dataPublicare.isAfter(LocalDate.now()))
+            {
+                binding.etDataPublicare.setError("Data nu poate fi in viitor!");
+                return;
+            }
+
+
+
+
             String descriere = binding.etDescriere.getText().toString().trim();
-            int cantitate = Integer.parseInt(binding.etCantitate.getText().toString().trim());
             Categorie categorie = Categorie.dinEticheta(binding.spCategorie.getSelectedItem().toString());
             int idBifat = binding.rgStare.getCheckedRadioButtonId();
+            if(idBifat == -1)
+            {
+                Toast.makeText(this, "Selectati o stare!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             boolean nou = idBifat == binding.rbNou.getId();
-            LocalDate dataPublicare = LocalDate.parse(binding.etDataPublicare.getText().toString().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
-
             Anunt anunt = new Anunt(titlu, descriere, pret, cantitate, categorie, nou, dataPublicare);
             Log.d("AddActivity", anunt.toString());
-            Toast.makeText(this, "Salvat: " + anunt.toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Salvat: " + anunt.toString(), Toast.LENGTH_SHORT).show();
+
+            Intent data = new Intent();
+            data.putExtra("element", anunt);
+            setResult(RESULT_OK, data);
+            finish();
         });
 
     }

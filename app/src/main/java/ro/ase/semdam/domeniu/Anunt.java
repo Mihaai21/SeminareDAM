@@ -1,8 +1,9 @@
 package ro.ase.semdam.domeniu;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Anunt {
+public class Anunt implements Serializable {
     private String titlu;
     private String descriere;
     private double pret;
@@ -75,5 +76,18 @@ public class Anunt {
         this.categorie = categorie;
         this.nou = nou;
         this.dataPublicare = dataPublicare;
+    }
+
+    @Override
+    public String toString() {
+        return "Anunt{" +
+                "titlu='" + titlu + '\'' +
+                ", descriere='" + descriere + '\'' +
+                ", pret=" + pret +
+                ", cantitate=" + cantitate +
+                ", categorie=" + categorie +
+                ", nou=" + nou +
+                ", dataPublicare=" + dataPublicare +
+                '}';
     }
 }

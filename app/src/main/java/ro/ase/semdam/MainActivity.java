@@ -7,7 +7,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.IntentCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -15,11 +18,14 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import ro.ase.semdam.databinding.ActivityMainBinding;
+import ro.ase.semdam.domeniu.Anunt;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main";
     private ActivityMainBinding binding;
+
+    private ActivityResultLauncher<Intent> addLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +62,19 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(intent);
 //        });
 
+        addLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if(result.getResultCode() == RESULT_OK && result.getData() != null)
+            {
+                Anunt anuntPrimit = IntentCompat.getSerializableExtra(result.getData(), "element", Anunt.class);
+                if(anuntPrimit != null)
+                {
+                    Toast.makeText(this, anuntPrimit.toString(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
         binding.fabAdauga.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, AddActivity.class);
-            startActivity(intent);
+            addLauncher.launch(new Intent(this, AddActivity.class));
         });
     }
 
