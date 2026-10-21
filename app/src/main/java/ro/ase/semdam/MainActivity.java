@@ -1,8 +1,10 @@
 package ro.ase.semdam;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -17,6 +19,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ro.ase.semdam.databinding.ActivityMainBinding;
 import ro.ase.semdam.domeniu.Anunt;
 
@@ -26,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private ActivityResultLauncher<Intent> addLauncher;
+
+    private List<Anunt> anunturi = new ArrayList<>();
+    private ArrayAdapter<Anunt> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +74,50 @@ public class MainActivity extends AppCompatActivity {
             if(result.getResultCode() == RESULT_OK && result.getData() != null)
             {
                 Anunt anuntPrimit = IntentCompat.getSerializableExtra(result.getData(), "element", Anunt.class);
+
                 if(anuntPrimit != null)
                 {
-                    Toast.makeText(this, anuntPrimit.toString(), Toast.LENGTH_LONG).show();
+                    int pozSelectie = result.getData().getIntExtra("pozitie", -1);
+                    if(pozSelectie >= 0)
+                    {
+                        anunturi.set(pozSelectie, anuntPrimit);
+                    }
+                    else {
+                        Toast.makeText(this, anuntPrimit.toString(), Toast.LENGTH_LONG).show();
+                        anunturi.add(anuntPrimit);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
 
         binding.fabAdauga.setOnClickListener(view -> {
             addLauncher.launch(new Intent(this, AddActivity.class));
+        });
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, anunturi);
+        // ListView lvAnunturi = findViewById(R.id.lvElemente)
+        binding.lvAnunturi.setAdapter(adapter);
+
+        binding.lvAnunturi.setOnItemClickListener((parent, view, position, id) -> {
+            Anunt selectat = anunturi.get(position);
+            Intent intent = new Intent(this, AddActivity.class);
+            intent.putExtra("element", selectat);
+            intent.putExtra("pozitie", position);
+            addLauncher.launch(intent);
+        });
+
+        binding.lvAnunturi.setOnItemLongClickListener((parent, view, position, id) -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Stergere")
+                    .setMessage("Stergeti elementul?")
+                    .setPositiveButton("Da", (d, w) -> {
+                        anunturi.remove(position);
+                        adapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("Nu", null)
+                    .show();
+            return true;
         });
     }
 

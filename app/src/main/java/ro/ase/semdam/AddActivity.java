@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.IntentCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -43,6 +44,23 @@ public class AddActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         binding.spCategorie.setAdapter(adapter);
+
+        Anunt existent = IntentCompat.getSerializableExtra(getIntent(), "element", Anunt.class);
+        int pozSelectie = getIntent().getIntExtra("pozitie", -1);
+
+        if(existent != null)
+        {
+            binding.etTitlu.setText(existent.getTitlu());
+            binding.etDescriere.setText(existent.getDescriere());
+            binding.etPret.setText(String.valueOf(existent.getPret()));
+            binding.etCantitate.setText(String.valueOf(existent.getCantitate()));
+            binding.spCategorie.setSelection(adapter.getPosition(Categorie.etichetaDin(existent.getCategorie())));
+            if(existent.isNou())
+                binding.rgStare.check(binding.rbNou.getId());
+            else
+                binding.rgStare.check(binding.rbFolosit.getId());
+            binding.etDataPublicare.setText(existent.getDataPublicare().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        }
 
         binding.btnSalveaza.setOnClickListener(v -> {
             String titlu = binding.etTitlu.getText().toString().trim();
@@ -113,6 +131,8 @@ public class AddActivity extends AppCompatActivity {
             Intent data = new Intent();
             data.putExtra("element", anunt);
             setResult(RESULT_OK, data);
+            if(pozSelectie >=0)
+                data.putExtra("pozitie", pozSelectie);
             finish();
         });
 

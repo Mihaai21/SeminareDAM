@@ -11,4 +11,13 @@ public enum Categorie {
             default -> ALTELE;
         };
     }
+
+    public static String etichetaDin(Categorie categorie) {
+        return switch (categorie) {
+            case ELECTRONICE -> "Electronice";
+            case CARTI -> "Carti";
+            case IMBRACAMINTE -> "Imbracaminte";
+            default -> "Altele";
+        };
+    }
 }
