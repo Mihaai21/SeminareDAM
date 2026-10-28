@@ -1,6 +1,7 @@
-package ro.ase.semdam.domeniu.adapters;
-
+package ro.ase.semdam.adapters;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ public class CustomAdapter extends ArrayAdapter<Anunt> {
         TextView tvTitlu;
         TextView tvPret;
         TextView tvCategorie;
+        TextView tvCantitate;
+        ColorStateList culoareTitluInitiala;
     }
 
     public CustomAdapter(@NonNull Context context, int resource,
@@ -43,7 +46,9 @@ public class CustomAdapter extends ArrayAdapter<Anunt> {
             holder.tvTitlu = convertView.findViewById(R.id.tvTitlu);
             holder.tvPret = convertView.findViewById(R.id.tvPret);
             holder.tvCategorie = convertView.findViewById(R.id.tvCategorie);
+            holder.tvCantitate = convertView.findViewById(R.id.tvCantitate);
 
+            holder.culoareTitluInitiala = holder.tvTitlu.getTextColors();
 
             convertView.setTag(holder);
         } else {
@@ -57,6 +62,14 @@ public class CustomAdapter extends ArrayAdapter<Anunt> {
             holder.tvPret.setText(String.valueOf(anunt.getPret()));
             holder.tvCategorie.setText(
                     Categorie.etichetaDin(anunt.getCategorie()));
+            holder.tvCantitate.setText(
+                    "Cantitate: " + anunt.getCantitate());
+
+            if (!anunt.isNou()) {
+                holder.tvTitlu.setTextColor(Color.RED);
+            } else {
+                holder.tvTitlu.setTextColor(holder.culoareTitluInitiala);
+            }
         }
 
         return convertView;

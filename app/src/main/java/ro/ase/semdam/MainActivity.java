@@ -1,9 +1,13 @@
 package ro.ase.semdam;
 
+import ro.ase.semdam.adapters.CustomAdapter;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
@@ -11,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.IntentCompat;
 import androidx.core.graphics.Insets;
@@ -35,6 +40,43 @@ public class MainActivity extends AppCompatActivity {
     private List<Anunt> anunturi = new ArrayList<>();
     private ArrayAdapter<Anunt> adapter;
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.meniu_principal,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_bnr) {
+            Toast.makeText(this, "Curs BNR: în curând",
+                    Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        if (id == R.id.action_despre) {
+            Toast.makeText(this, "Aplicație seminar 1086",
+                    Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        if (id == R.id.action_total_stoc) {
+            int total = 0;
+
+            for (Anunt anunt : anunturi) {
+                total += anunt.getCantitate();
+            }
+
+            Toast.makeText(this, "Total stoc: " + total,
+                    Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        setSupportActionBar(binding.toolbar);
         // View Binding: decomentați getRoot (+ binding.main / binding.btnToast mai jos)
         // setContentView(binding.getRoot());
         // Varianta clasică: R.layout + findViewById (pereche)
@@ -95,8 +138,7 @@ public class MainActivity extends AppCompatActivity {
             addLauncher.launch(new Intent(this, AddActivity.class));
         });
 
-        adapter = new ro.ase.semdam.domeniu.adapters.CustomAdapter(this, 0, anunturi);        // ListView lvAnunturi = findViewById(R.id.lvElemente)
-        binding.lvAnunturi.setAdapter(adapter);
+        adapter = new ro.ase.semdam.adapters.CustomAdapter(this, 0, anunturi);        binding.lvAnunturi.setAdapter(adapter);
 
         binding.lvAnunturi.setOnItemClickListener((parent, view, position, id) -> {
             Anunt selectat = anunturi.get(position);
