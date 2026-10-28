@@ -95,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
             addLauncher.launch(new Intent(this, AddActivity.class));
         });
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, anunturi);
-        // ListView lvAnunturi = findViewById(R.id.lvElemente)
+        adapter = new ro.ase.semdam.domeniu.adapters.CustomAdapter(this, 0, anunturi);        // ListView lvAnunturi = findViewById(R.id.lvElemente)
         binding.lvAnunturi.setAdapter(adapter);
 
         binding.lvAnunturi.setOnItemClickListener((parent, view, position, id) -> {
