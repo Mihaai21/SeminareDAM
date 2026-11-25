@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SemDAM</string>
+    <string name="salut_1086">Salut, 1086!</string>
+    <string name="titlu">Titlu</string>
+    <string name="descriere">Descriere</string>
+    <string name="pret">Pret</string>
+    <string name="cantitate">Cantitate</string>
+    <string name="data_publicare">Data publicare</string>
+    <string name="eur">EUR:</string>
+    <string name="usd">USD:</string>
+</resources>
